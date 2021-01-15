@@ -1,0 +1,88 @@
+import requests
+from bs4 import BeautifulSoup
+from tkinter import *
+def puanaGore():
+    r =requests.get('https://www.imdb.com/search/title/?user_rating='+str(puan.get()))
+    soup = BeautifulSoup(r.text, 'html.parser')
+    i=0
+    Result.delete ( 0, 50)#imdb
+    for item in soup.find_all(class_="mode-advanced"):
+        i=i+1
+        tmp=BeautifulSoup(str(item), 'html.parser')
+        Result.insert(i,tmp.find("h3").get_text().replace("\n", " "))
+def cikisZamaninaGore():
+    r =requests.get('https://www.imdb.com/search/title/?title_type=feature&year='+str(yil.get())+'-01-01,'+str(yil.get())+'-12-31')
+    soup = BeautifulSoup(r.text, 'html.parser')
+    i=0
+    Result.delete ( 0, 50)
+    for item in soup.find_all(class_="mode-advanced"):
+        i=i+1
+        tmp=BeautifulSoup(str(item), 'html.parser')
+        Result.insert(i,tmp.find("h3").get_text().replace("\n", " "))
+
+def kategoriyeGore():
+    r =requests.get('https://www.imdb.com/search/title/?genres='+kategoriler[int(secim.get())-1])
+    soup = BeautifulSoup(r.text, 'html.parser')
+    i=0
+    Result.delete ( 0, 50)
+    for item in soup.find_all(class_="mode-advanced"):
+        i=i+1
+        tmp=BeautifulSoup(str(item), 'html.parser')
+        Result.insert(i,tmp.find("h3").get_text().replace("\n", " "))
+       
+
+
+top = Tk()
+puan=StringVar()
+Label(top,text="IMDB puanina gore listele").grid(row=0,column=0,columnspan = 2,sticky="nsew")
+Label(top,text="IMDB puanini giriniz:").grid(row=1,column=0,sticky="nsew")
+Entry(top, width = 15, textvariable = puan).grid(row=1,column=1,sticky="nsew")
+Button(top, text=">", command=puanaGore).grid(row=1,column=2)
+
+secim=StringVar()
+Label(top,text="Kategoriye gore listele").grid(row=2,column=0,columnspan = 2,sticky="nsew")
+Label(top,text="Kategori seciniz:").grid(row=3,column=0,sticky="nsew")
+Entry(top, width = 15, textvariable = secim).grid(row=3,column=1,sticky="nsew")
+Button(top, text=">", command=kategoriyeGore).grid(row=3,column=2)
+kategoriler=["Action",
+            "Adventure",
+            "Animation",
+            "Biography",
+            "Comedy",
+            "Crime",
+            "Documentary",
+            "Drama",
+            "Family",
+            "Fantasy",
+            "Film Noir",
+            "History",
+            "Horror",
+            "Music",
+            "Musical",
+            "Mystery",
+            "Romance",
+            "Sci-Fi",
+            "Short Film",
+            "Sport",
+            "Superhero",
+            "Thriller",
+            "War",
+            "Western"]
+
+kategorilerListBox = Listbox(top)
+for x in range(len(kategoriler)):
+    kategorilerListBox.insert(x+1,str(x+1)+" : " + kategoriler[x])
+kategorilerListBox.grid(row=4,column=0,columnspan = 2,sticky="nsew")
+
+yil=StringVar()
+Label(top,text="Cikis yilina gore listele:").grid(row=5,column=0,columnspan = 2,sticky="nsew")
+Label(top,text="Cikis yili giriniz:").grid(row=6,column=0,sticky="nsew")
+Entry(top, width = 15, textvariable = yil).grid(row=6,column=1,sticky="nsew")
+Button(top, text=">", command=cikisZamaninaGore).grid(row=6,column=2)
+
+Result = Listbox(top)
+Label(top,text="------------").grid(row=7,column=0,columnspan = 2,sticky="nsew")
+Result.grid(row=8,column=0,columnspan = 2,sticky="nsew")
+top.title("IMDB")
+top.geometry("300x600")
+top.mainloop()
